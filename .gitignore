@@ -10,6 +10,7 @@ Server/BulkLogs/
 bulkloader-log-*
 bulkloader-progress-*
 Client/tests/
+
 # Package Files #
 *.jar
 *.war
