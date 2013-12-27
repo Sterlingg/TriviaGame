@@ -1,0 +1,36 @@
+<html>
+<head>
+<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+</head>
+  <body>
+    <table>
+      <tr>
+       <td>Question: <b>{{ que }}</b> </td>
+      </tr>
+
+      <tr>
+       <td>DistractorA: <b>{{ distA }}</b> </td>
+      </tr>
+
+      <tr>
+       <td>DistractorB: <b>{{ distB }}</b> </td>
+      </tr>
+
+      <tr>
+       <td>DistractorC: <b>{{ distC }}</b> </td>
+      </tr>
+
+      <tr>
+       <td>Answer: <b>{{ ans }}</b> </td>
+      </tr>
+
+      <tr>
+      <td>
+   <form action="/database" method="get">
+    <div> <input type="submit" value="Display Database"> </div>
+   </form>
+      </tr>
+    </table>
+
+  </body>
+</html>

@@ -1,0 +1,16 @@
+*.class
+*.pyc
+*.*~
+*.apk
+Server/google_appengine/
+Client/TriviaGame/.metadata/
+Client/.metadata/
+bin/
+Server/BulkLogs/
+bulkloader-log-*
+bulkloader-progress-*
+Client/tests/
+# Package Files #
+*.jar
+*.war
+*.ear
