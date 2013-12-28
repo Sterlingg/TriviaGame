@@ -8,8 +8,16 @@ handlers:
 - url: /stylesheets
   static_dir: stylesheets
 
-- url: /.*
+- url: /getquestion
   script: server.app
+
+- url: /getcategory
+  script: server.app
+
+- url: /parsetk
+  script: server.app
+  login: admin
+  secure: always
 
 libraries:
 - name: jinja2
@@ -20,3 +28,4 @@ libraries:
 
 builtins:
 - remote_api: on
+- deferred: on
