@@ -54,6 +54,13 @@ class getQuestion(webapp2.RequestHandler):
         jsonstr = json.dumps([q.to_dict() for q in questions])
         self.response.out.write(jsonstr)
 
+
+class getQuestions(webapp2.RequestHandler):
+    def get(self):
+        questions_query = models.TextQuestion.all()
+
+        self.response.out.write(str(questions_query))
+
 # getQuestion: Returns 25 questions in JSON format encrypted with AES-CBC 128 bit.
 class getCategory(webapp2.RequestHandler):
     def get(self):
@@ -66,7 +73,8 @@ class getCategory(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([('/', MainPage),
                                ('/getquestion',getQuestion),
                                ('/getcategory',getCategory),
-                               ('/parsetk',ParseTKQuestions)
+                               ('/parsetk',ParseTKQuestions),
+                               ('/questions', getQuestions)
                                ],
                               debug=True)
 

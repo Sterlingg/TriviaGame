@@ -17,21 +17,21 @@ public class PointHelper {
 	/**
 	 * addPoints: Adds points to the round score when the user answers a question correctly.
 	 */
-	public void addPoints() {
+	public static void addPoints() {
 		points += ADD_POINTS;		
 	}
 
 	/**
 	 * subPoints: Subtracts points from the round score when the user answers a question incorrectly.
 	 */
-	public void subPoints() {
+	public static void subPoints() {
 		points -= SUB_POINTS;
 	}	
 	
 	/**
 	 * resetPoints: Resets the amount of points the user has got to 0.
 	 */
-	public void resetPoints() {
+	public static void resetPoints() {
 		points = 0;
 	}
 
@@ -39,7 +39,7 @@ public class PointHelper {
 	 * getPoints: Gets the number of points the user has.
 	 * @return
 	 */
-	public int getPoints() {
+	public static int getPoints() {
 		return points;
 	}
 			

@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
-import com.globex.triviagame.crypto.MCrypt;
 import com.globex.triviagame.datatypes.TextQuestion;
 
 /**
@@ -33,18 +32,91 @@ import com.globex.triviagame.datatypes.TextQuestion;
  */
 public class TextQuestionService extends IntentService{
 
-	//private static final String LOCAL_HOST = "http://10.0.2.2:8080";
-	private static final String REAL_HOST = "http://2.guestbook5696.appspot.com";
+	private static final String HOST = "http://10.0.2.2:9090";
+	//private static final String REAL_HOST = "http://2.guestbook5696.appspot.com";
 	
 	private static final int STATUS_RUNNING = 0;
 	private static final int STATUS_FINISHED = 1;
 	private static final int STATUS_ERROR = 2;
-	private static final String URL = REAL_HOST;
+	private static final String URL = HOST;
 	
 	public TextQuestionService() {
 		super("Text Question Service");
 	}
 		
+	/**
+	 * 
+	 * getASCIIContentFromEntity: Gets the string out of an entity.
+	 * @param entity
+	 * @return
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
+		protected String getASCIIContentFromEntity(HttpEntity entity) throws IllegalStateException, IOException {
+			InputStream in = entity.getContent();
+			StringBuffer out = new StringBuffer();
+			int n = 1;
+			while (n>0) {
+			byte[] b = new byte[4096];
+			n =  in.read(b);
+			if (n>0) out.append(new String(b, 0, n));
+			}
+			return out.toString();
+			}
+
+	/**
+	 * 
+	 * getBinContentFromEntity: Gets the string out of an entity.
+	 * @param entity
+	 * @return
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
+		protected ByteArrayOutputStream getBinContentFromEntity(HttpEntity entity) throws IllegalStateException, IOException {
+			InputStream in = entity.getContent();
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			int n = 1;
+			while (n>0) {
+			byte[] b = new byte[4096];
+			n =  in.read(b);
+			if (n>0) out.write(b, 0, n);
+			}
+			return out;
+			}
+
+	/**
+	 * getQuestions: Retrieves questions from the external database.
+	 * GET: /getquestion	 
+	 * */
+	private JSONArray getQuestions(Intent intent){
+		
+		Log.v("TextQuestionService","getQuestions()");
+		
+		String category= intent.getStringExtra("category");
+		
+		HttpClient httpClient = new DefaultHttpClient();
+		HttpContext httpContext = new BasicHttpContext();
+		// Filter by category.
+		HttpGet httpGet = new HttpGet(URL + "/getquestion" + "?category=" + category);
+		
+		String questions;
+		
+		try{
+			HttpResponse response = httpClient.execute(httpGet,httpContext);
+			HttpEntity entity = response.getEntity();
+			ByteArrayOutputStream b = getBinContentFromEntity(entity);
+			questions = new String(b.toByteArray());
+			
+			return new JSONArray(questions);
+		}
+		catch (Exception e){
+			//TODO: Add popup when not connected to internet / failure here.
+		Log.v("TextQuestionService","Caught exception" + e);
+		return null;
+		}
+		
+	}
+
 	/**
 	 * onHandleIntent: Gets a question from the server and returns it to the
 	 * 	               calling activity.
@@ -103,82 +175,6 @@ public class TextQuestionService extends IntentService{
 		}
 		
 		return result;
-	}
-	
-/**
- * 
- * getASCIIContentFromEntity: Gets the string out of an entity.
- * @param entity
- * @return
- * @throws IllegalStateException
- * @throws IOException
- */
-	protected String getASCIIContentFromEntity(HttpEntity entity) throws IllegalStateException, IOException {
-		InputStream in = entity.getContent();
-		StringBuffer out = new StringBuffer();
-		int n = 1;
-		while (n>0) {
-		byte[] b = new byte[4096];
-		n =  in.read(b);
-		if (n>0) out.append(new String(b, 0, n));
-		}
-		return out.toString();
-		}
-	
-	
-	/**
-	 * 
-	 * getBinContentFromEntity: Gets the string out of an entity.
-	 * @param entity
-	 * @return
-	 * @throws IllegalStateException
-	 * @throws IOException
-	 */
-		protected ByteArrayOutputStream getBinContentFromEntity(HttpEntity entity) throws IllegalStateException, IOException {
-			InputStream in = entity.getContent();
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			int n = 1;
-			while (n>0) {
-			byte[] b = new byte[4096];
-			n =  in.read(b);
-			if (n>0) out.write(b, 0, n);
-			}
-			return out;
-			}
-		
-	/**
-	 * getQuestions: Retrieves questions from the external database.
-	 * GET: /getquestion	 
-	 * */
-	private JSONArray getQuestions(Intent intent){
-		
-		Log.v("TextQuestionService","getQuestions()");
-		
-		String category= intent.getStringExtra("category");
-		
-		HttpClient httpClient = new DefaultHttpClient();
-		HttpContext httpContext = new BasicHttpContext();
-		// Filter by category.
-		HttpGet httpGet = new HttpGet(URL + "/getquestion" + "?category=" + category);
-		
-		String questions;
-		
-		try{
-			final HttpResponse response = httpClient.execute(httpGet,httpContext);
-			final HttpEntity entity = response.getEntity();
-			//Decrypt the encrypted JSON response, so the user can't just grab the answers from
-			//the HTTP response... Although they can just get this string from a memory dump.
-			MCrypt crypt = new MCrypt();	
-			ByteArrayOutputStream b = getBinContentFromEntity(entity);
-			questions = new String(crypt.decrypt(MCrypt.bytesToHex(b.toByteArray())));
-			return new JSONArray(questions);
-		}
-		catch (Exception e){
-			//TODO: Add popup when not connected to internet / failure here.
-		Log.v("TextQuestionService","Caught exception" + e);
-		return null;
-		}
-		
 	}
 	
 	

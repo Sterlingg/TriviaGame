@@ -5,13 +5,14 @@ import android.os.CountDownTimer;
 import android.widget.ProgressBar;
 
 import com.globex.triviagame.R;
+import com.globex.triviagame.activities.GameActivity;
 import com.globex.triviagame.activities.RoundFinishActivity;
 
 public class TimerHelper {
+	private static TimerHelper instance = null;
+	
 	private GameActivity game;
-	private PointHelper pointHelper;
 	private CountDownTimer timer;
-	private boolean isFinishing = false;
 
 	/**
 	 * TimerHelper: Constructs a new
@@ -19,10 +20,23 @@ public class TimerHelper {
 	 * @param game
 	 *            : The activity that uses the time helper.
 	 */
-	public TimerHelper(GameActivity game, PointHelper pointHelper) {
+	private TimerHelper(GameActivity game) {
 		this.game = game;
-		this.pointHelper = game.getPointsHelper();
-		initTimer();
+	}
+
+	public static TimerHelper getInstance(GameActivity game){
+		if(instance == null){
+			instance = new TimerHelper(game);
+			return instance;
+		}
+		else{
+			instance.setGame(game);
+			return instance;
+		}
+	}
+	
+	private void setGame(GameActivity game) {
+		this.game = game;
 	}
 
 	/**
@@ -36,15 +50,12 @@ public class TimerHelper {
 		timer = new CountDownTimer(ROUND_TIME, 500) {
 			@Override
 			public void onFinish() {
-				pBar.setProgress(pBar.getMax());
-				Intent i = new Intent(game.getApplication(),
+				pBar.setProgress(pBar.getMax());				
+				Intent i = new Intent(game,
 						RoundFinishActivity.class);
-				i.putExtra("points", pointHelper.getPoints());
-				pointHelper.resetPoints();
-				game.finish();
-				if(isFinishing == false){
+			
 				game.startActivity(i);
-				}
+				game.finish();
 			}
 
 			@Override
@@ -61,13 +72,11 @@ public class TimerHelper {
 	public void startTimer() {
 		timer.start();
 	}
-	
+
 	/**
-	 * stopTimer: Starts the timer running.
+	 * startTimer: Starts the timer running.
 	 */
 	public void stopTimer() {
-		isFinishing = true;
+		timer.cancel();
 	}
-	
-
 }

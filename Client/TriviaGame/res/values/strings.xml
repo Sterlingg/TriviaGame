@@ -14,5 +14,6 @@
     <string name="title_activity_round_finish">RoundFinishActivity</string>
     <string name="title_activity_category_select">CategorySelectActivity</string>
     <string name="category_title">Select a Category</string>
+    <string name="back_to_menu">Main Menu</string>
 
 </resources>

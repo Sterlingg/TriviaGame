@@ -1,7 +1,7 @@
 package com.globex.triviagame.listeners;
 
 import com.globex.triviagame.activities.CategorySelectActivity;
-import com.globex.triviagame.game.GameActivity;
+import com.globex.triviagame.activities.GameActivity;
 
 import android.content.Intent;
 import android.util.Log;

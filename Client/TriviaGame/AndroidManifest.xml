@@ -14,7 +14,7 @@
         android:allowBackup="true"
         android:debuggable="true"
         android:icon="@drawable/ic_launcher"
-        android:label='TriviaGame!c'>
+        android:label='TriviaGame!'>
         <activity         
             android:name="com.globex.triviagame.activities.MenuActivity"
             android:label="@string/app_name"
@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.globex.triviagame.game.GameActivity"
+            android:name="com.globex.triviagame.activities.GameActivity"
             android:label="@string/title_activity_game"
             android:theme="@android:style/Theme.NoTitleBar"
             android:parentActivityName="com.globex.triviagame.activities.MenuActivity" 

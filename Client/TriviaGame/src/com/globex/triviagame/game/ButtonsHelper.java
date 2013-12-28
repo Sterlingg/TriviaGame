@@ -2,9 +2,11 @@ package com.globex.triviagame.game;
 
 import java.util.ArrayList;
 
+import android.app.Application;
 import android.widget.Button;
 
 import com.globex.triviagame.R;
+import com.globex.triviagame.activities.GameActivity;
 import com.globex.triviagame.listeners.AnswerButtonListener;
 
 /**
@@ -16,18 +18,17 @@ import com.globex.triviagame.listeners.AnswerButtonListener;
  * @author sterling
  *
  */
-public class ButtonsHelper {
+public class ButtonsHelper extends Application{
+	private static ButtonsHelper instance = null;
 	
 	private GameActivity game;
-	private PointHelper pointHelper;
 	
 	private ArrayList<Button> answerButtons;
 	private AnswerButtonListener distractorHandler;
 	private AnswerButtonListener answerHandler;
 	
-	public ButtonsHelper(GameActivity game, PointHelper pointHelper){
+	private ButtonsHelper(GameActivity game){
 		this.game = game;
-		this.pointHelper = pointHelper;
 		
 		answerButtons = new ArrayList<Button>();
 		
@@ -35,18 +36,35 @@ public class ButtonsHelper {
 		disableButtons();
 	}
 	
+	public static ButtonsHelper getInstance(GameActivity game){
+		if(instance == null){
+			instance = new ButtonsHelper(game);
+			return instance;
+		}
+		else{
+			instance.setGame(game);
+			return instance;
+		}		
+	}
+	
+	private void setGame(GameActivity game) {
+		this.game = game;
+		
+	}
+
 	/**
 	 * init_answer_buttons: Gets the answer buttons from the layout.
 	 */
 	public void initAnswerButtons(AsyncTQHelper questionHelper){
-		answerButtons.add((Button) game.findViewById(R.id.answerbtn1));enableButtons();
+		answerButtons.clear();
+		answerButtons.add((Button) game.findViewById(R.id.answerbtn1));
 		answerButtons.add((Button) game.findViewById(R.id.answerbtn2));
 		answerButtons.add((Button) game.findViewById(R.id.answerbtn3));
 		answerButtons.add((Button) game.findViewById(R.id.answerbtn4));
-		
+		enableButtons();
 		// Set all of the click handlers to updateQuestions.
-		distractorHandler = new AnswerButtonListener(pointHelper, questionHelper, ButtonType.DISTRACTOR);
-		answerHandler = new AnswerButtonListener(pointHelper, questionHelper, ButtonType.ANSWER);
+		distractorHandler = new AnswerButtonListener(questionHelper, ButtonType.DISTRACTOR);
+		answerHandler = new AnswerButtonListener(questionHelper, ButtonType.ANSWER);
 		
 		//First 3 indices are fake buttons
 		for(int i = 0; i < answerButtons.size() - 1; i++)

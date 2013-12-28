@@ -11,16 +11,18 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.globex.triviagame.R;
+import com.globex.triviagame.activities.GameActivity;
 import com.globex.triviagame.datatypes.TextQuestion;
 import com.globex.triviagame.transport.ResultReceiverImpl;
 import com.globex.triviagame.transport.TextQuestionService;
 
 public class AsyncTQHelper implements ResultReceiverImpl.Receiver{
 
+	private static AsyncTQHelper instance = null;
+	
 	private GameActivity game;
 	private ResultReceiverImpl receiver;
 
-	// Used to tell if the timer should be started.
 	private boolean isStartGame = true;
 
 	// Used to tell if the list should be swapped for the new list immediately after the service returns.
@@ -44,32 +46,28 @@ public class AsyncTQHelper implements ResultReceiverImpl.Receiver{
 	private ButtonsHelper buttonsHelper;
 	private TimerHelper timerHelper;
 
+	private Intent serviceIntent = null;
+
 	/**
 	 * AsyncTQHandler:
 	 * @param game
 	 */
-	public AsyncTQHelper(GameActivity game, TimerHelper timerHelper, ButtonsHelper buttonsHelper){
+	private AsyncTQHelper(GameActivity game, TimerHelper timerHelper, ButtonsHelper buttonsHelper){
 		this.game = game;
 		this.timerHelper = timerHelper;
 		this.buttonsHelper = buttonsHelper;
 	}
-	
-	/**
-	 * startWebService: Start a service that retrieves the questions from the
-	 * db.
-	 */
-	public void startWebService() {
-		receiver = new ResultReceiverImpl(new Handler());
-		receiver.setReceiver(this);
-		final Intent intent = new Intent(Intent.ACTION_SYNC, null, game,
-				TextQuestionService.class);
-		intent.putExtra("receiver", receiver);
-		intent.putExtra("command", "getquestions");
-		// Get the selected category.
-		intent.putExtra("category", game.getIntent().getExtras().getString("category"));
-		game.startService(intent);
+		
+	public static AsyncTQHelper getInstance(GameActivity game, TimerHelper timerHelper, ButtonsHelper buttonsHelper){
+		if(instance == null){
+			return new AsyncTQHelper(game, timerHelper, buttonsHelper);
+		}
+		else{
+			instance.setGame(game);
+			return instance;
+		}
 	}
-
+	
 	/**
 	 * onReceiveResult: When a response with a list of questions is received by
 	 * 					the server this method is called. This is a receiver for the TextQuestionService.
@@ -91,10 +89,10 @@ public class AsyncTQHelper implements ResultReceiverImpl.Receiver{
 			// When the service is initially called there is no 'queued up' questions waiting to be answered
 			// before the questions need to be updated. Start the timer when the service is finished.
 			if(isStartGame == true){
-				resetQIndex();
+				currentQIndex = 0;
 				questions = resultData.getParcelableArrayList("results");
 				timerHelper.startTimer();
-				isStartGame=false;
+				isStartGame = false;
 				updateQuestions();
 			}
 			// The newList should be cached until it needs to be used.
@@ -128,6 +126,33 @@ public class AsyncTQHelper implements ResultReceiverImpl.Receiver{
 			return false;
 	}
 
+	private void setGame(GameActivity game) {
+		this.game = game;		
+	}
+
+
+	/**
+	 * startWebService: Start a service that retrieves the questions from the
+	 * db.
+	 */
+	public void startWebService() {
+		receiver = new ResultReceiverImpl(new Handler());
+		receiver.setReceiver(this);
+		serviceIntent = new Intent(Intent.ACTION_SYNC, null, game,
+				TextQuestionService.class);
+		serviceIntent .putExtra("receiver", receiver);
+		serviceIntent.putExtra("command", "getquestions");
+		// Get the selected category.
+		serviceIntent.putExtra("category", game.getIntent().getExtras().getString("category"));
+		game.startService(serviceIntent);
+	}
+	
+	/**
+	 * stopWebService: Stops the service that is fetching more text questions.
+	 **/
+	public void stopWebService(){
+		game.stopService(serviceIntent);
+	}
 
 	/**
 	 * updateQuestions: Sets the text fields with a new question from the retrieved
@@ -140,8 +165,6 @@ public class AsyncTQHelper implements ResultReceiverImpl.Receiver{
 		if(currentQIndex == 0){
 			buttonsHelper.enableButtons();		
 		}
-
-		TextView question = (TextView) game.findViewById(R.id.question);
 
 		// How many questions from the end of the list the service will start running at.
 		final int SERVICE_START_SIZE = questions.size() - 10;
@@ -156,18 +179,10 @@ public class AsyncTQHelper implements ResultReceiverImpl.Receiver{
 		}
 
 		if (currentQIndex < questions.size()) {
+			updateButtons();
 			// Still using the old list, so cache webservice result in tempQuestions.
 			useNewListNow = false;
-			question.setText(questions.get(currentQIndex).getQuestion());
-			answerButtons.get(0)
-			.setText(questions.get(currentQIndex).getDistractorA());
-			answerButtons.get(1)
-			.setText(questions.get(currentQIndex).getDistractorB());
-			answerButtons.get(2)
-			.setText(questions.get(currentQIndex).getDistractorC());
-			answerButtons.get(3)
-			.setText(questions.get(currentQIndex).getAnswer());
-			currentQIndex++;
+
 		} 
 		// Used up all the questions, so get some more 
 		else
@@ -175,22 +190,26 @@ public class AsyncTQHelper implements ResultReceiverImpl.Receiver{
 			// The new list from the web service should be used immediately.
 			useNewListNow = true;
 			buttonsHelper.disableButtons();
-			resetQIndex();
-
-			// The service has finished, so it is fine to use the temp questions list. If it hasn't finished
-			// updateQuestions() will be called when it does finish.
-			if(isServiceFinished() == true){
-				questions = tempQuestions;
-				updateQuestions();
-			}
+			currentQIndex = 0;
+			questions = tempQuestions;
+			updateQuestions();
 		}
 	}
+	
+	private void updateButtons(){
+		TextView question = (TextView) game.findViewById(R.id.question);
+		ArrayList<Button> answerButtons = buttonsHelper.getAnswerButtons();
 
-	/**
-	 * resetQIndex: Resets the index used for retrieving questions when a new list from the server is used.
-	 */
-	private void resetQIndex() {
-		currentQIndex = 0;	
+		question.setText(questions.get(currentQIndex).getQuestion());
+		answerButtons.get(0)
+		.setText(questions.get(currentQIndex).getDistractorA());
+		answerButtons.get(1)
+		.setText(questions.get(currentQIndex).getDistractorB());
+		answerButtons.get(2)
+		.setText(questions.get(currentQIndex).getDistractorC());
+		answerButtons.get(3)
+		.setText(questions.get(currentQIndex).getAnswer());
+		currentQIndex++;
 	}
 
 }

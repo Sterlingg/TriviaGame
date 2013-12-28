@@ -7,10 +7,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Menu;
 
 import com.globex.triviagame.R;
 import com.globex.triviagame.datatypes.Category;
+import com.globex.triviagame.game.CategoryHolder;
 import com.globex.triviagame.transport.CategoryService;
 import com.globex.triviagame.transport.ResultReceiverImpl;
 
@@ -23,36 +23,38 @@ import com.globex.triviagame.transport.ResultReceiverImpl;
  */
 public class SplashActivity extends Activity implements ResultReceiverImpl.Receiver{
 
-	// I really hate Java enums...
 	private static final int 	STATUS_RUNNING = 0;
 	private static final int 	STATUS_FINISHED = 1;
 	private static final int 	STATUS_ERROR = 2;
-	private ArrayList<String> catList = new ArrayList<String>();
 	
 	// Incremented each time a service finishes. Used to tell if we can start the MenuActivity.
 	private int servicesFinished = 0;
 	
     private Intent nextIntent; 
 		
+	/**
+	 * handleCategoryResult: Forwards the response from GET /getcategory to the next intent.
+	 * 	 					 Fills catList with all categories in the DB.
+	 */
+	private void handleCategoryResult(Bundle resultData){
+		ArrayList<Category> results = resultData.getParcelableArrayList("results");
+		ArrayList<String> catList = new ArrayList<String>();
+		for(Category c : results){
+			catList.add(c.getCategory());
+		}
+		CategoryHolder.setCatList(catList);
+
+		Log.v("GameActivity", "FINISHED");
+	}
+
 	@Override
 	  public void onCreate(Bundle savedInstanceState) {
 	        super.onCreate(savedInstanceState);
 	 
 	        setContentView(R.layout.activity_splash);
-	        setPreferences();
-	        nextIntent = new Intent(SplashActivity.this, MenuActivity.class); 
+	        nextIntent = new Intent(this, MenuActivity.class); 
 	        startCategoryWebService();
 	}
-
-	
-	/**
-	 * setPreferences: Sets up the applications constant values.
-	 */
-	// TODO: Store constants in PreferenceManager.
-	private void setPreferences(){
-		
-	}
-
 
 	/**
 	 * startCategoryWebService: Start a service that retrieves the categories from the
@@ -67,14 +69,6 @@ public class SplashActivity extends Activity implements ResultReceiverImpl.Recei
 		intent.putExtra("receiver", receiver);
 		intent.putExtra("command", "getcategories");
 		startService(intent);
-	}
-	
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_splash, menu);
-		return true;
 	}
 
 	/**
@@ -103,19 +97,6 @@ public class SplashActivity extends Activity implements ResultReceiverImpl.Recei
 			Log.v("GameActivity", "ERROR");
 			break;
 		}		
-	}
-	
-	/**
-	 * handleCategoryResult: Forwards the response from GET /getcategory to the next intent.
-	 * 	 					 Fills catList with all categories in the DB.
-	 */
-	private void handleCategoryResult(Bundle resultData){
-		ArrayList<Category> results = resultData.getParcelableArrayList("results");
-		for(Category c : results){
-			catList.add(c.getCategory());
-		}							
-        nextIntent.putStringArrayListExtra("catList", catList);
-		Log.v("GameActivity", "FINISHED");
 	}
 	
 }

@@ -12,7 +12,10 @@ handlers:
   script: server.app
 
 - url: /getcategory
-  script: server.app
+  script: server.app 
+
+- url: /questions
+  script: server.app 
 
 - url: /parsetk
   script: server.app

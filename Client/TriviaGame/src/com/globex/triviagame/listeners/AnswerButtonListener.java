@@ -18,14 +18,12 @@ import com.globex.triviagame.game.PointHelper;
  */
 public class AnswerButtonListener implements OnClickListener {
 
-	private PointHelper pointHelper;
 	private AsyncTQHelper questionHelper;
 	private ButtonType buttonType;
 		
-	public AnswerButtonListener(PointHelper pointHelper, AsyncTQHelper questionHelper, ButtonType buttonType){
+	public AnswerButtonListener(AsyncTQHelper questionHelper, ButtonType buttonType){
 		this.buttonType = buttonType;
 		this.questionHelper = questionHelper;
-		this.pointHelper = pointHelper;
 	}
 
 	@Override
@@ -33,12 +31,12 @@ public class AnswerButtonListener implements OnClickListener {
 		
 		switch(buttonType){
 			case DISTRACTOR:			
-				pointHelper.subPoints();
+				PointHelper.subPoints();
 				questionHelper.updateQuestions();
 				
 				break;
 			case ANSWER:
-				pointHelper.addPoints();
+				PointHelper.addPoints();
 				questionHelper.updateQuestions();
 				break;
 		}

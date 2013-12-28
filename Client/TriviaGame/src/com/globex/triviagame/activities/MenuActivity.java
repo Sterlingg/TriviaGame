@@ -1,7 +1,5 @@
 package com.globex.triviagame.activities;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,9 +40,7 @@ public class MenuActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// Send the retrieved categories to the CategorySelect activity.
-				ArrayList<String> catList = getIntent().getStringArrayListExtra("catList");
-				Intent i = new Intent(getApplication(),CategorySelectActivity.class);
-				i.putStringArrayListExtra("catList", catList);
+				Intent i = new Intent(v.getContext(), CategorySelectActivity.class);
 				startActivity(i);	
 			}
 		});

@@ -12,9 +12,6 @@ def UpdateSchema(cursor=None, num_updated=0):
 
     tq_query.filter("rand =", None)
 
-    if cursor:
-        query.with_cursor(cursor)
-
     to_put = []
     old_cat_list = [cat.category for cat in cat_query]
     new_cat_list = []
