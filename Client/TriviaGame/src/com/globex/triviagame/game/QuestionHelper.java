@@ -37,9 +37,9 @@ public class QuestionHelper implements ResultReceiverImpl.Receiver{
 	// Keeps track of the progress of the question service.
 	private int serviceStatus;
 
-	private static final int 	STATUS_RUNNING = 0;
-	private static final int 	STATUS_FINISHED = 1;
-	private static final int 	STATUS_ERROR = 2;
+	private static final int STATUS_RUNNING = 0;
+	private static final int STATUS_FINISHED = 1;
+	private static final int STATUS_ERROR = 2;
 
 	private ButtonsHelper buttonsHelper;
 	private TimerHelper timerHelper;
@@ -96,6 +96,7 @@ public class QuestionHelper implements ResultReceiverImpl.Receiver{
 				oldQuestions = resultData.getParcelableArrayList("results");
 				timerHelper.startTimer();
 				getNewList = false;
+				buttonsHelper.enableButtons();
 				updateQuestions();
 			}
 			// The newList should be cached until it needs to be used.
@@ -163,7 +164,9 @@ public class QuestionHelper implements ResultReceiverImpl.Receiver{
 	 */
 	public void updateQuestions() {
 		if(oldQuestions.size() < NUM_Q_RECEIVED){
+			buttonsHelper.disableButtons();
 			getNewList = true;
+			startWebService();
 			Log.i("QuestionHelper", "Not full list received.");
 			return;
 		}
@@ -186,7 +189,6 @@ public class QuestionHelper implements ResultReceiverImpl.Receiver{
 		else
 		{
 			// The new list from the web service should be used immediately.
-			//buttonsHelper.disableButtons();
 			useNewListNow = true;
 			currentQIndex = 0;
 			oldQuestions = newQuestions;
