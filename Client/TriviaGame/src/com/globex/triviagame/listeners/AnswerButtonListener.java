@@ -4,7 +4,7 @@ package com.globex.triviagame.listeners;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import com.globex.triviagame.game.AsyncTQHelper;
+import com.globex.triviagame.game.QuestionHelper;
 import com.globex.triviagame.game.ButtonType;
 import com.globex.triviagame.game.PointHelper;
 
@@ -18,10 +18,10 @@ import com.globex.triviagame.game.PointHelper;
  */
 public class AnswerButtonListener implements OnClickListener {
 
-	private AsyncTQHelper questionHelper;
+	private QuestionHelper questionHelper;
 	private ButtonType buttonType;
 		
-	public AnswerButtonListener(AsyncTQHelper questionHelper, ButtonType buttonType){
+	public AnswerButtonListener(QuestionHelper questionHelper, ButtonType buttonType){
 		this.buttonType = buttonType;
 		this.questionHelper = questionHelper;
 	}
@@ -32,8 +32,7 @@ public class AnswerButtonListener implements OnClickListener {
 		switch(buttonType){
 			case DISTRACTOR:			
 				PointHelper.subPoints();
-				questionHelper.updateQuestions();
-				
+				questionHelper.updateQuestions();				
 				break;
 			case ANSWER:
 				PointHelper.addPoints();

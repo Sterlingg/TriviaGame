@@ -74,7 +74,6 @@ public class SplashActivity extends Activity implements ResultReceiverImpl.Recei
 	/**
 	 * onReceiveResult: Callback with result from GET /getcategory and GET /getquestion.
 	 */
-	//TODO: Add connection timeouts.
 	@Override
 	public void onReceiveResult(int result, Bundle resultData) {
 		switch (result) {

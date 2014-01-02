@@ -25,7 +25,6 @@ from google.appengine.ext import deferred
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
-# MainPage: The root page.
 class MainPage(webapp2.RequestHandler):
     def get(self):
         template_values = {}
@@ -33,13 +32,11 @@ class MainPage(webapp2.RequestHandler):
         template = jinja_environment.get_template('index.html')
         self.response.out.write(template.render(template_values))
 
-# ParseTKQuestions: Adds random float to all TextQuestion entities, and updates the available categories.
 class ParseTKQuestions(webapp2.RequestHandler):
     def get(self):
         deferred.defer(update_tq_schema.UpdateSchema)
         self.response.out.write('Schema migration successfully initiated.')
 
-# getQuestion: Returns 25 questions in JSON format encrypted with AES-CBC 128 bit.
 class getQuestion(webapp2.RequestHandler):
     def get(self):
         rand_num = random.random()
@@ -54,14 +51,12 @@ class getQuestion(webapp2.RequestHandler):
         jsonstr = json.dumps([q.to_dict() for q in questions])
         self.response.out.write(jsonstr)
 
-
 class getQuestions(webapp2.RequestHandler):
     def get(self):
         questions_query = models.TextQuestion.all()
 
         self.response.out.write(str(questions_query))
 
-# getQuestion: Returns 25 questions in JSON format encrypted with AES-CBC 128 bit.
 class getCategory(webapp2.RequestHandler):
     def get(self):
         category_query = models.Category.all()
@@ -77,4 +72,3 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/questions', getQuestions)
                                ],
                               debug=True)
-

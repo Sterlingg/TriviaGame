@@ -1,6 +1,7 @@
 package com.globex.triviagame.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import android.app.Application;
 import android.widget.Button;
@@ -23,20 +24,17 @@ public class ButtonsHelper extends Application{
 	
 	private GameActivity game;
 	
-	private ArrayList<Button> answerButtons;
+	private static ArrayList<Button> answerButtons;
 	private AnswerButtonListener distractorHandler;
 	private AnswerButtonListener answerHandler;
 	
 	private ButtonsHelper(GameActivity game){
-		this.game = game;
-		
-		answerButtons = new ArrayList<Button>();
-		
-		// Disable buttons while the first set of questions is retrieved.
-		disableButtons();
+		this.game = game;	
+		answerButtons = new ArrayList<Button>();	
 	}
 	
 	public static ButtonsHelper getInstance(GameActivity game){
+		
 		if(instance == null){
 			instance = new ButtonsHelper(game);
 			return instance;
@@ -55,13 +53,13 @@ public class ButtonsHelper extends Application{
 	/**
 	 * init_answer_buttons: Gets the answer buttons from the layout.
 	 */
-	public void initAnswerButtons(AsyncTQHelper questionHelper){
+	public void initAnswerButtons(QuestionHelper questionHelper){
 		answerButtons.clear();
 		answerButtons.add((Button) game.findViewById(R.id.answerbtn1));
 		answerButtons.add((Button) game.findViewById(R.id.answerbtn2));
 		answerButtons.add((Button) game.findViewById(R.id.answerbtn3));
 		answerButtons.add((Button) game.findViewById(R.id.answerbtn4));
-		enableButtons();
+		disableButtons();
 		// Set all of the click handlers to updateQuestions.
 		distractorHandler = new AnswerButtonListener(questionHelper, ButtonType.DISTRACTOR);
 		answerHandler = new AnswerButtonListener(questionHelper, ButtonType.ANSWER);
@@ -104,6 +102,10 @@ public class ButtonsHelper extends Application{
 				for(int i = 0; i < answerButtons.size() - 1; i++)
 					answerButtons.get(i).setOnClickListener(distractorHandler);
 				answerButtons.get(answerButtons.size() - 1).setOnClickListener(answerHandler);
+	}
+
+	public void shuffleButtons() {
+		Collections.shuffle(answerButtons);
 	}
 	
 }

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.globex.triviagame.R;
-import com.globex.triviagame.game.AsyncTQHelper;
+import com.globex.triviagame.game.QuestionHelper;
 import com.globex.triviagame.game.ButtonsHelper;
 import com.globex.triviagame.game.PointHelper;
 import com.globex.triviagame.game.TimerHelper;
@@ -18,7 +18,7 @@ import com.globex.triviagame.game.TimerHelper;
 public class GameActivity extends Activity  {
 
 	private PointHelper pointsHelper;
-	private AsyncTQHelper questionHelper;
+	private QuestionHelper questionHelper;
 	private TimerHelper timerHelper;
 	private ButtonsHelper buttonsHelper;
 
@@ -42,7 +42,7 @@ public class GameActivity extends Activity  {
 	private void setUpHelpers(){		
 		timerHelper = TimerHelper.getInstance(this);
 		buttonsHelper = ButtonsHelper.getInstance(this);
-		questionHelper = AsyncTQHelper.getInstance(this, timerHelper, buttonsHelper);	
+		questionHelper = QuestionHelper.getInstance(this, timerHelper, buttonsHelper);	
 
 		buttonsHelper.initAnswerButtons(questionHelper);
 		// Disable buttons until the web service finishes.

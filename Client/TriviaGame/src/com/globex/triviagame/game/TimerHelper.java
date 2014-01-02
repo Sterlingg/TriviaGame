@@ -43,7 +43,7 @@ public class TimerHelper {
 	 * initTimer: Sets up the round timer with default time of 1 minute.
 	 */
 	public void initTimer() {
-		final int ROUND_TIME = 20000;
+		final int ROUND_TIME = 200000;
 		final ProgressBar pBar = (ProgressBar) game
 				.findViewById(R.id.time_left);
 		pBar.setMax(ROUND_TIME);

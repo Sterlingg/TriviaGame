@@ -31,8 +31,8 @@ import android.util.Log;
  */
 public class CategoryService extends IntentService{
 
-	private static final String HOST = "http://10.0.2.2:9090";
-	//private static final String HOST = "http://2.guestbook5696.appspot.com";
+	//private static final String HOST = "http://10.0.2.2:9090";
+	private static final String HOST = "http://2.guestbook5696.appspot.com";
 	private static final int STATUS_RUNNING = 0;
 	private static final int STATUS_FINISHED = 1;
 	private static final int STATUS_ERROR = 2;
@@ -79,7 +79,7 @@ public class CategoryService extends IntentService{
 			final HttpEntity entity = response.getEntity();
 	
 			String categories = getASCIIContentFromEntity(entity);
-			Log.v("CategoryService","CATEGORIRES ===" +categories);
+			Log.v("CategoryService", "CATEGORIRES ===" + categories);
 			return new JSONArray(categories);
 		}
 		catch (Exception e){
@@ -108,7 +108,7 @@ public class CategoryService extends IntentService{
 
 			// Get the data from the server.
 			try{
-				JSONArray categories= getCategories();
+				JSONArray categories = getCategories();
 				ArrayList<Category> results = parseJSONtoCat(categories);
 				Log.v("CategoryService",results.get(1).toString());
 				b.putString("responseType", "Categories");

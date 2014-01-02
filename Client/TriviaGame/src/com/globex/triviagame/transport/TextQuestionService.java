@@ -32,8 +32,8 @@ import com.globex.triviagame.datatypes.TextQuestion;
  */
 public class TextQuestionService extends IntentService{
 
-	private static final String HOST = "http://10.0.2.2:9090";
-	//private static final String REAL_HOST = "http://2.guestbook5696.appspot.com";
+	//private static final String HOST = "http://10.0.2.2:9090";
+	private static final String HOST = "http://2.guestbook5696.appspot.com";
 	
 	private static final int STATUS_RUNNING = 0;
 	private static final int STATUS_FINISHED = 1;
@@ -78,7 +78,7 @@ public class TextQuestionService extends IntentService{
 			int n = 1;
 			while (n>0) {
 			byte[] b = new byte[4096];
-			n =  in.read(b);
+			n = in.read(b);
 			if (n>0) out.write(b, 0, n);
 			}
 			return out;
@@ -92,7 +92,7 @@ public class TextQuestionService extends IntentService{
 		
 		Log.v("TextQuestionService","getQuestions()");
 		
-		String category= intent.getStringExtra("category");
+		String category = intent.getStringExtra("category");
 		
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpContext httpContext = new BasicHttpContext();
@@ -135,7 +135,7 @@ public class TextQuestionService extends IntentService{
 			receiver.send(STATUS_RUNNING, Bundle.EMPTY);
 
 			// Get the data from the server.
-			try{				
+			try{
 				JSONArray questions = getQuestions(intent);
 				ArrayList<TextQuestion> results = parseJSONtoTQ(questions);
 				Log.v("TextQuestionService",results.get(1).toString());
@@ -148,7 +148,6 @@ public class TextQuestionService extends IntentService{
                 receiver.send(STATUS_ERROR, b);
 			}
 		}
-		this.stopSelf();
 	}
 	
 	/**
